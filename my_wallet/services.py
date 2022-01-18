@@ -2,11 +2,6 @@ from configparser import ConfigParser
 from mysql.connector import connect, Error
 
 
-__all__ = [
-			'read_db_config',
-			'db_connect_decorator'
-]
-
 def read_db_config(filename='config.ini', section='mysql'):
 	""" Read database configuration file and return a dictionary object
 	:param filename: name of the configuration file
@@ -38,7 +33,6 @@ def db_connect_decorator(func):
 					with conn.cursor() as cursor:
 						func(cursor=cursor, *args, **kwargs)
 						conn.commit()						
-						
 				else:
 					print('connection failed.')
 		except Error as e:
