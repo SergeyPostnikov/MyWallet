@@ -1,9 +1,9 @@
-
-
 if __name__ == '__main__':
 	from services import db_connect_decorator
 else:
 	from my_wallet.services import db_connect_decorator
+
+
 
 #----------------------User section-----------------------------------#
 
@@ -19,6 +19,33 @@ SQL_UPDATE_USER_INFO = '''UPDATE user
 						  WHERE id = %s'''
 
 SQL_DELETE_USER = 'DELETE FROM user WHERE id = %s'
+
+
+@db_connect_decorator
+def create_new_user(cursor, connection, firstname, lastname, email):
+	cursor.execute(SQL_CREATE_NEW_USER, (firstname, lastname, email))
+
+
+@db_connect_decorator
+def show_all_users(cursor, connection):
+	cursor.execute(SQL_SHOW_ALL_USERS)
+	return cursor.fetchall()
+
+@db_connect_decorator
+def update_user_info(cursor, connection, firstname, lastname, email, user_id):
+	cursor.execute(SQL_UPDATE_USER_INFO, (firstname, lastname, email, user_id))
+
+
+@db_connect_decorator
+def show_user_by_pk(cursor, connection, pk):
+	cursor.execute(SQL_SHOW_USER_BY_PK, (pk,))
+	return cursor.fetchall()
+
+
+@db_connect_decorator
+def delete_user(cursor, connection, pk):
+	cursor.execute(SQL_DELETE_USER, (pk,))
+
 
 #--------------------Transations section----------------------------------#
 
@@ -48,89 +75,62 @@ SQL_SUM_OF_TR = ''' SELECT SUM(amount)
 					GROUP BY user_id'''
 
 
-
-def handler(cursor):
-	for user in cursor.fetchall():
-		print(user)
-
-# TODO: fixit
 @db_connect_decorator
-def initialize(cursor, creation_schema):
-	with open(creation_schema, 'r') as f:
-		cursor.execute(f)
-
-@db_connect_decorator
-def create_new_user(cursor, firstname, lastname, email):
-	cursor.execute(SQL_CREATE_NEW_USER, (firstname, lastname, email))
-
-
-@db_connect_decorator
-def show_all_users(cursor):
-	cursor.execute(SQL_SHOW_ALL_USERS)
-	handler(cursor)
-
-@db_connect_decorator
-def update_user_info(cursor, firstname, lastname, email, user_id):
-	cursor.execute(SQL_UPDATE_USER_INFO, (firstname, lastname, email, user_id))
-
-@db_connect_decorator
-def show_user_by_pk(cursor, pk):
-	cursor.execute(SQL_SHOW_USER_BY_PK, (pk,))
-	handler(cursor)
-
-
-@db_connect_decorator
-def delete_user(cursor, pk):
-	cursor.execute(SQL_DELETE_USER, (pk,))
-# -------
-
-@db_connect_decorator
-def create_transaction(cursor, user_id, description, amount, tr_type):
+def create_transaction(cursor, connection, user_id, description, amount, tr_type):
 	cursor.execute(SQL_CREATE_TRANSACTION, (user_id, description, amount, tr_type))
 
-
 @db_connect_decorator
-def delete_transaction(cursor, tr_id):
+def delete_transaction(cursor, connection, tr_id):
 	cursor.execute(SQL_DELETE_TRANSACTION, (tr_id,))
 
 @db_connect_decorator
-def show_all_transactions(cursor):
+def show_all_transactions(cursor, connection):
 	cursor.execute(SQL_SHOW_ALL_TRANSACTION)
-	handler(cursor)
+	return cursor.fetchall()
 
 @db_connect_decorator
-def show_all_user_transactions(cursor, pk):
+def show_all_user_transactions(cursor, connection, pk):
 	cursor.execute(SQL_SHOW_ALL_USER_TRANSACTION, (pk,))
-	handler(cursor)
-
+	return cursor.fetchall()
 
 @db_connect_decorator
-def update_transaction(cursor, tr_id, description, amount, tr_type):
+def update_transaction(cursor, connection, tr_id, description, amount, tr_type):
 	cursor.execute(SQL_UPDATE_TRANSACTION, (description, amount, tr_type, tr_id ))
 
 @db_connect_decorator
-def sum_transaction(cursor, user_id, since, till, tr_type):
+def sum_transaction(cursor, connection, user_id, since, till, tr_type):
 	cursor.execute(SQL_SUM_OF_TR, (since, till, user_id, tr_type))
-	handler(cursor)
+	# handler(cursor)
+	return cursor.fetchone()
+#--------------------- usability section --
+
+
+
+# TODO: fixit
+@db_connect_decorator
+def initialize(cursor, connection, creation_schema):
+	with open(creation_schema, 'r') as f:
+		cursor.execute(f)
 
 
 
 
-#-----------
-
-# if __name__ == '__main__':
-	# create_new_user(firstname='Neko', lastname="San", email='Yanix2x2')
+if __name__ == '__main__':
+	create_new_user(firstname='Taiginator', lastname="Sama", email='taiga@gmail.com')
 	# update_user_info(firstname='Nekinator', lastname="Shinigami", email='Yanix2x2', user_id='2')
 	# show_user_by_pk(pk=2)
 	# delete_user(pk=7)
 	# show_all_users()
-	# create_transaction(user_id=2, description='salary', amount=200, tr_type='income')
+	# create_transaction(user_id=2, description='sold toaster', amount=800, tr_type='income')
 	# show_all_transactions()
 	# show_all_user_transactions(pk=1)
-	# sum_transaction(user_id=2, since='2022-01-17 21:07:20',
-	# 				till='2022-01-17 21:20:22',
-	# 				tr_type='outcome')
+	# a = sum_transaction(user_id=2, since='2022-01-17 21:07:20',
+					# till='2022-01-17 21:20:22',
+					# tr_type='outcome')
+	# for i in a:
+		# print(i)
 	# update_transaction(tr_id=2, description='bread', amount=0.8, tr_type='outcome')
 
-# todo: date instead of datetime
-# todo: return cursor not empty
+# todo: date instead of datetime : i think it's impossible with default
+# todo: return cursor not empty : done
+# todo: rewrite db_conf reader

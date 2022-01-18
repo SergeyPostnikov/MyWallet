@@ -31,8 +31,10 @@ def db_connect_decorator(func):
 				if conn.is_connected():
 					print('connection established.')
 					with conn.cursor() as cursor:
-						func(cursor=cursor, *args, **kwargs)
-						conn.commit()						
+						res = func(cursor=cursor, connection=conn,  *args, **kwargs)						
+						conn.commit()
+						return res
+
 				else:
 					print('connection failed.')
 		except Error as e:
