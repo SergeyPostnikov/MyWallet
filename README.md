@@ -1,7 +1,8 @@
 # MyWallet
 
-Tasks for Akvelon Python SDE candidate
-my-wallet
+Tasks for Akvelon Python SDE candidate  
+
+my-wallet  
 ├── config.ini  
 ├── creation_shcema.sql  
 ├── flwallet.py  
