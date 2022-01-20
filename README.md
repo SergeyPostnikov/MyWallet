@@ -2,7 +2,7 @@
 
 Tasks for Akvelon Python SDE candidate
 
-
+'''
 ├── config.ini
 ├── creation_shcema.sql
 ├── flwallet.py
@@ -11,4 +11,4 @@ Tasks for Akvelon Python SDE candidate
 │  └── storage.py
 ├── readme.md
 └── requirements.txt
-
+'''
