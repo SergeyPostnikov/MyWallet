@@ -37,13 +37,19 @@ def update_user_info(cursor, firstname, lastname, email, user_id):
 
 @db_connect_decorator
 def show_user_by_pk(cursor, pk):
+	""" """
 	cursor.execute(SQL_SHOW_USER_BY_PK, (pk,))
 	return cursor.fetchall()
 
 @db_connect_decorator
-def show_user_by_(cursor, value, column):
-	cursor.execute(f'{SQL_SHOW_ALL_USERS} WHERE {column} = "{value}"')	
+def show_user_by_(cursor, value, column, order_by=None):
+	""" """
+	QUERY = f'{SQL_SHOW_ALL_USERS} WHERE {column} = "{value}"' 
+	QUERY = f'{QUERY} ORDER BY {order_by}' if order_by is not None else QUERY   
+	cursor.execute(QUERY)	
 	return cursor.fetchall()
+
+
 
 @db_connect_decorator
 def delete_user(cursor, pk):
@@ -88,6 +94,19 @@ def delete_transaction(cursor, tr_id):
 def show_all_transactions(cursor):
 	cursor.execute(SQL_SHOW_ALL_TRANSACTION)
 	return cursor.fetchall()
+
+@db_connect_decorator
+def all_user_transactions(cursor, value, column='user_id', order_by=None):
+	QUERY = f"{SQL_SHOW_ALL_TRANSACTION} WHERE {column} = '{value}'"
+	QUERY = f'{QUERY} ORDER BY {order_by}' if order_by is not None else QUERY 
+	cursor.execute(QUERY)
+	return cursor.fetchall()
+
+	# 		^
+	# 		|
+	# wich should i left?		
+	# 		|
+	# 		v
 
 @db_connect_decorator
 def show_all_user_transactions(cursor, pk):
